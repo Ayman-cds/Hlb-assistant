@@ -32,7 +32,7 @@ const ApplicationNavigator = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="StartUp" component={StartupContainer} />
-          <Stack.Screen name="Home" component={VoiceTest2} />
+          <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Goals" component={Goals} />
         </Stack.Navigator>
       </NavigationContainer>

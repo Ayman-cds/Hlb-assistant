@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "637307224293",
+    "project_id": "nlpbanking",
+    "storage_bucket": "nlpbanking.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637307224293:android:9a41576fbc473d0cba540c",
+        "android_client_info": {
+          "package_name": "com.nlpbanking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637307224293-tcc1osaqk12rpue1r3k2unq1igpj82jg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGaLZTexXRfTsGs5ag1OMIGB8l0G3thlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "637307224293-tcc1osaqk12rpue1r3k2unq1igpj82jg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
