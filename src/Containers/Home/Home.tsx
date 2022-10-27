@@ -20,33 +20,6 @@ import MicSVG from '../../Assets/Home/microphone.svg'
 // import { PicovoiceManager } from '@picovoice/picovoice-react-native'
 const Home = () => {
   const animation = useRef(null)
-  // let wakeWordCallback = () => {
-  //   // wake word detected
-  //   console.log('I AM AWAKEEEEEE')
-  // }
-
-  // let inferenceCallback = inference => {
-  //   if (inference.isUnderstood) {
-  //     let intent = inference.intent
-  //     let slots = inference.slots
-  //     // take action based on inferred intent and slot values
-  //   } else {
-  //     // handle unsupported commands
-  //   }
-  // }
-  // const initVoiceManager = async () => {
-  //   let picovoiceManager = await PicovoiceManager.create(
-  //     '6NTd3CjGFOc4pnmkXqgxLS41JxjGFyRAjxYHeOQbRDmeBQ5L6oOR2g==',
-  //     '../../../assets/picoVoice/jarvis_android.rhn',
-  //     wakeWordCallback,
-  //     '../../../assets/picoVoice/alarm_android.ppn',
-  //     inferenceCallback,
-  //   )
-  //   console.log(picovoiceManager)
-  // }
-  // useEffect(() => {
-  //   initVoiceManager()
-  // }, [])
 
   return (
     <HomeContainer>

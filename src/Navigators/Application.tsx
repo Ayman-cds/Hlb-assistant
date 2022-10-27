@@ -10,7 +10,7 @@ import { useTheme } from '@/Hooks'
 import { navigationRef } from './utils'
 import Home from '@/Containers/Home/Home'
 import Goals from '@/Containers/Goals/Goals'
-import PicoTest from '@/Containers/PicoTest'
+import VoiceTest2 from '@/Containers/VoiceTest2'
 
 export type RootStackParamList = {
   StartUp: undefined
@@ -32,7 +32,7 @@ const ApplicationNavigator = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="StartUp" component={StartupContainer} />
-          <Stack.Screen name="Home" component={PicoTest} />
+          <Stack.Screen name="Home" component={VoiceTest2} />
           <Stack.Screen name="Goals" component={Goals} />
         </Stack.Navigator>
       </NavigationContainer>

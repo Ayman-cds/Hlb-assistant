@@ -3,6 +3,7 @@
   package="com.bankingapp"
 >
     <uses-permission android:name="android.permission.INTERNET" />
+    <queries> <package android:name="com.google.android.googlequicksearchbox"/> </queries>
 
     <application
       android:name=".MainApplication"
