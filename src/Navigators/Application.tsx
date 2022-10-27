@@ -10,7 +10,7 @@ import { useTheme } from '@/Hooks'
 import { navigationRef } from './utils'
 import Home from '@/Containers/Home/Home'
 import Goals from '@/Containers/Goals/Goals'
-import Ar from '@/Containers/Ar/Ar'
+import PicoTest from '@/Containers/PicoTest'
 
 export type RootStackParamList = {
   StartUp: undefined
@@ -32,9 +32,8 @@ const ApplicationNavigator = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="StartUp" component={StartupContainer} />
-          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Home" component={PicoTest} />
           <Stack.Screen name="Goals" component={Goals} />
-          <Stack.Screen name="Ar" component={Ar} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
