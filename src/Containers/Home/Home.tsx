@@ -19,9 +19,11 @@ import KeyboardSVG from '../../Assets/Home/keyboard.svg'
 import MicSVG from '../../Assets/Home/microphone.svg'
 import { addDoc, collection } from 'firebase/firestore'
 import { db } from '@/firebase.config'
+import Rive, { RiveRef } from 'rive-react-native'
 
 const Home = () => {
   const animation = useRef(null)
+  const riveRef = React.useRef<RiveRef>(null)
   const uploadNewSosRequest = async () => {
     try {
       console.log('uploading request')
@@ -35,8 +37,10 @@ const Home = () => {
       console.error('Error while uploading Request', error)
     }
   }
+
   useEffect(() => {
-    uploadNewSosRequest()
+    // uploadNewSosRequest()
+    riveRef.current?.setInputState('State Machine 1', 'isLimited', false)
   }, [])
 
   return (
@@ -46,7 +50,7 @@ const Home = () => {
         <AvailableMoney>RM 20,000.23</AvailableMoney>
         <AvailableMoneyLabel>Available to spend</AvailableMoneyLabel>
       </MoneySummaryContainer>
-      <LottieView
+      {/* <LottieView
         {...{
           ref: animation,
           speed: 0.5,
@@ -57,6 +61,12 @@ const Home = () => {
           },
           source: RobotAnimation,
         }}
+      /> */}
+      <Rive
+        autoplay
+        ref={riveRef}
+        url="https://firebasestorage.googleapis.com/v0/b/nlpbanking.appspot.com/o/hero_bot%20(2).riv?alt=media&token=908c2263-2e16-4fc3-9f25-db2ce1486c95"
+        style={{ width: 400, height: 400 }}
       />
       <WelcomeContainer>
         <WelcomeText>Welcome back Ayman</WelcomeText>

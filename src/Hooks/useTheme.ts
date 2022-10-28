@@ -29,7 +29,7 @@ export default function () {
   const isDark = useSelector(
     (state: { theme: ThemeState }) => state.theme.darkMode,
   )
-  const darkMode = isDark === null ? colorScheme === 'dark' : isDark
+  const darkMode = false
 
   let variables = {}
   let partialTheme = {}

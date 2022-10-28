@@ -6,6 +6,7 @@ import { store, persistor } from '@/Store'
 import ApplicationNavigator from '@/Navigators/Application'
 import './Translations'
 import { PermissionsAndroid, Platform } from 'react-native'
+import 'react-native-gesture-handler'
 
 const App = () => {
   const recordAudioRequest = async () => {
@@ -48,6 +49,7 @@ const App = () => {
        */}
       <PersistGate loading={null} persistor={persistor}>
         <ApplicationNavigator />
+        {/* <Chat /> */}
       </PersistGate>
     </Provider>
   )

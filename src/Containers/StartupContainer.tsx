@@ -20,7 +20,7 @@ const StartupContainer = () => {
         resolve(true)
       }, 2000),
     )
-    navigation.navigate('Home')
+    navigation.navigate('Test')
   }
 
   useEffect(() => {
