@@ -9,6 +9,7 @@ import {
 } from './ChatElements'
 import { TextInput } from 'react-native-gesture-handler'
 import {
+  addDoc,
   collection,
   doc,
   Firestore,
@@ -16,6 +17,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  setDoc,
 } from 'firebase/firestore'
 import { db } from '@/firebase.config'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
@@ -45,7 +47,7 @@ const Chat = () => {
           _id: index,
           text: message.text,
           user: {
-            _id: 2,
+            _id: message.userId,
             name: 'react native',
             avatar: 'https://placeimg.com/140/140/any',
           },
@@ -56,11 +58,16 @@ const Chat = () => {
   }, [fbMessages])
 
   const [messages, setMessages] = useState([])
-  const onSend = useCallback((messages = []) => {
-    setMessages(previousMessages =>
-      GiftedChat.append(previousMessages, messages),
-    )
-  }, [])
+  const onSend = async userMessage => {
+    console.log(userMessage)
+    const newMessageTest = {
+      text: userMessage[0].text,
+      createdAt: new Date(),
+      userId: 1,
+    }
+
+    await addDoc(messageRef, newMessageTest)
+  }
 
   return (
     <ChatContainer>
