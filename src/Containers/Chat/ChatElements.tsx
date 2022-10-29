@@ -3,13 +3,17 @@ import { TextInput } from 'react-native-gesture-handler'
 import styled from 'styled-components'
 import SendIcon from '../../Assets/Chat/send.png'
 import Mic from '../../Assets/Chat/microphone.png'
-
-export const ChatContainer = styled(View)`
+interface ColorScheme {
+  colorScheme: 'blue' | 'white'
+}
+export const ChatContainer = styled(View)<ColorScheme>`
   display: flex;
+  background-color: ${props =>
+    props.colorScheme === 'blue' ? '#1b2445' : 'white'};
   height: 100%;
   justify-content: space-around;
 `
-export const ChatHeader = styled(View)`
+export const ChatHeader = styled(Pressable)`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -30,11 +34,11 @@ export const ChatSection = styled(View)`
   height: 82%;
   margin-bottom: 30px;
 `
-export const ChatTitle = styled(Text)`
+export const ChatTitle = styled(Text)<ColorScheme>`
   font-family: Poppins-Light;
   font-size: 20px;
   text-align: center;
-  color: black;
+  color: ${props => (props.colorScheme === 'blue' ? 'white' : 'black')};
 `
 export const InputRowContainer = styled(View)`
   display: flex;
@@ -88,9 +92,10 @@ export const MicIcon = styled(Image).attrs({
 `
 interface IsMe {
   isMe: boolean
+  colorScheme: 'blue' | 'white'
 }
 export const ChatBubbleContainer = styled(View)<IsMe>`
-  background-color: ${props => (props.isMe ? '#0077b6' : '#9e9e9e4f')};
+  background-color: ${props => (props.isMe ? '#0077b6' : '#9e9e9eaa')};
   padding: 10px;
   max-width: 300px;
   border-radius: 20px;

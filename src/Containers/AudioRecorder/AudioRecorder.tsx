@@ -107,7 +107,7 @@ const AudioRecorder = ({
       body: JSON.stringify(req),
     })
     const res = await response.json()
-    sendMessageToFb(1, res.translated)
+    sendMessageToFb(1, res.translation)
     sendMessageToFb(2, res.text)
     console.log('RES ---->>>>>', res)
   }
@@ -148,7 +148,6 @@ const AudioRecorder = ({
   const onPressOutHandler = () => {
     stopAudioCapture()
     setButtonState({ pressed: false, size: 70, speed: 0.5 })
-    sendMessageToFb(2, 'processing...')
   }
   return (
     <ButtonAnimationWrapper

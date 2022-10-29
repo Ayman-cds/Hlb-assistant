@@ -37,8 +37,6 @@ import {
 import { db } from '@/firebase.config'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
 import Rive, { Fit } from 'rive-react-native'
-import LottieView from 'lottie-react-native'
-import audioButton from '../../Assets/Home/audioButton.json'
 import AudioRecorder from '../AudioRecorder/AudioRecorder'
 
 const ChatInput = () => {
@@ -105,6 +103,15 @@ const ChatBubble = (message: Bubble<TMessage>['props']) => {
     console.log('MESSAGE =======>>>>', message.message.currentMessage.user._id)
   }, [])
 
+  const sendMessageToFb = async (userNumber: 1 | 2, inputText?: string) => {
+    const newMessageTest = {
+      text: inputText ? inputText : userInput,
+      createdAt: new Date(),
+      userId: userNumber,
+    }
+    await addDoc(messageRef, newMessageTest)
+    setTextInput('')
+  }
   const isMe = message.message.currentMessage.user._id === 1
   return (
     <ChatBubbleContainer {...{ isMe }}>
@@ -118,6 +125,22 @@ const Chat = () => {
   const [fbMessages] = useCollectionData(q)
   const [messages, setMessages] = useState<IMessage[]>([])
 
+  const sendMessageToFb = async (userNumber: 1 | 2, inputText?: string) => {
+    const newMessageTest = {
+      text: inputText ? inputText : userInput,
+      createdAt: new Date(),
+      userId: userNumber,
+    }
+    await addDoc(messageRef, newMessageTest)
+  }
+  const [colorReadyToChange, setColorReadyToChange] = useState(false)
+  const onPressAvatar = () => {
+    sendMessageToFb(
+      2,
+      'This may sound like a weird question but what is your favorite color?',
+    )
+    setColorReadyToChange(true)
+  }
   useEffect(() => {
     if (fbMessages) {
       const allMessages: IMessage[] = fbMessages.map((message, index) => {
@@ -135,13 +158,27 @@ const Chat = () => {
           },
         }
       })
+      console.log('LAST MESSAGE', allMessages[0].text)
+      if (
+        allMessages[0].text.toLowerCase().includes('blue') &&
+        colorReadyToChange
+      ) {
+        setColorScheme('blue')
+      }
+
+      if (
+        allMessages[0].text.toLowerCase().includes('white') &&
+        colorReadyToChange
+      ) {
+        setColorScheme('white')
+      }
       setMessages(allMessages)
     }
   }, [fbMessages])
-
+  const [colorScheme, setColorScheme] = useState<'white' | 'blue'>('white')
   return (
-    <ChatContainer>
-      <ChatHeader>
+    <ChatContainer {...{ colorScheme }}>
+      <ChatHeader {...{ onPress: onPressAvatar }}>
         <RiveContainer>
           <Rive
             fit={Fit.Contain}
@@ -150,7 +187,7 @@ const Chat = () => {
             style={{ width: 80, height: 80 }}
           />
         </RiveContainer>
-        <ChatTitle>Tony - Personal Assistant</ChatTitle>
+        <ChatTitle {...{ colorScheme }}>Tony - Personal Assistant</ChatTitle>
       </ChatHeader>
       <ChatSection>
         <GiftedChat
