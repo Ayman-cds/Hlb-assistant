@@ -36,7 +36,7 @@ const ApplicationNavigator = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="StartUp" component={StartupContainer} />
-          <Stack.Screen name="Test" component={Chat} />
+          <Stack.Screen name="Test" component={Home} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Goals" component={Goals} />
           <Stack.Screen name="Chat" component={Chat} />

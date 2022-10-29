@@ -1,11 +1,18 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { GiftedChat, IMessage } from 'react-native-gifted-chat'
 import {
   ChatContainer,
+  ChatHeader,
+  ChatSection,
   ChatTitle,
   InputContainer,
+  InputRowContainer,
+  SendButton,
+  ButtonWrapper,
   StyledTextInput,
+  MicIcon,
+  MicButton,
 } from './ChatElements'
 import { TextInput } from 'react-native-gesture-handler'
 import {
@@ -21,18 +28,74 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/firebase.config'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
+import Rive from 'rive-react-native'
+import LottieView from 'lottie-react-native'
+import audioButton from '../../Assets/Home/audioButton.json'
+// const SendButton = () => (
 
-const SendButton = () => (
-  <TouchableOpacity {...{}}>
-    <Text {...{ color: 'black' }}>Send</Text>
-  </TouchableOpacity>
-)
+//   <TouchableOpacity {...{ style: { borderWidth: 1 } }}>
+//     <Text {...{ color: 'black' }}>Send</Text>
+//   </TouchableOpacity>
+// )
 
 const ChatInput = () => {
+  const messageRef = collection(db, 'nlpReplies')
+  const animation = useRef(null)
+  const [userInput, setTextInput] = useState('')
+
+  const onSendMessage = (userNumber: 1 | 2) => {
+    sendMessageToFb(userNumber)
+    sendToFlask()
+  }
+
+  const sendMessageToFb = async (userNumber: 1 | 2, inputText?: string) => {
+    const newMessageTest = {
+      text: inputText ? inputText : userInput,
+      createdAt: new Date(),
+      userId: userNumber,
+    }
+    await addDoc(messageRef, newMessageTest)
+    setTextInput('')
+  }
+  const sendToFlask = async () => {
+    const req = { text: userInput }
+    const response = await fetch('http://10.81.176.186:3000/response', {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(req),
+    })
+    const res = await response.json()
+
+    console.log(res)
+    sendMessageToFb(2, res.text)
+  }
+
+  useEffect(() => {
+    console.log(userInput)
+  }, [userInput])
+
   return (
-    <InputContainer>
-      <StyledTextInput />
-    </InputContainer>
+    <InputRowContainer>
+      <MicButton>
+        <MicIcon />
+      </MicButton>
+      <InputContainer>
+        <StyledTextInput
+          {...{
+            placeHolder: 'What would you like to do',
+            placeholderTextColor: 'black',
+            value: userInput,
+            onChangeText: text => setTextInput(text),
+          }}
+        />
+        <ButtonWrapper {...{ onPress: () => onSendMessage(1) }}>
+          <SendButton />
+        </ButtonWrapper>
+      </InputContainer>
+    </InputRowContainer>
   )
 }
 const Chat = () => {
@@ -62,35 +125,30 @@ const Chat = () => {
     }
   }, [fbMessages])
 
-  const sendMessageToFb = async (userMessage: IMessage[]) => {
-    console.log(userMessage)
-    const newMessageTest = {
-      text: userMessage[0].text,
-      createdAt: new Date(),
-      userId: 1,
-    }
-    await addDoc(messageRef, newMessageTest)
-  }
-
   return (
     <ChatContainer>
-      <ChatTitle>HLB Assistant</ChatTitle>
-      <View
-        {...{ style: { borderWidth: 1, borderColor: 'white', height: '80%' } }}
-      >
+      <ChatHeader>
+        <Rive
+          autoplay
+          url="https://firebasestorage.googleapis.com/v0/b/nlpbanking.appspot.com/o/avatarWhiteBlue.riv?alt=media&token=684a95ae-879e-4c2c-a88a-fce1397f560b"
+          style={{ width: 800, height: 80, borderWidth: 1 }}
+        />
+        <ChatTitle>Tony - Personal Assistant</ChatTitle>
+      </ChatHeader>
+      <ChatSection>
         <GiftedChat
           {...{
             messages,
-            onSend: messages => sendMessageToFb(messages),
+            // onSend: messages => sendMessageToFb(messages),
 
             // renderSend: SendButton,
             user: {
               _id: 1,
             },
-            // renderInputToolbar: ChatInput,
+            renderInputToolbar: () => <ChatInput />,
           }}
         />
-      </View>
+      </ChatSection>
     </ChatContainer>
   )
 }
