@@ -49,7 +49,7 @@ export const WelcomeSubtext = styled(Text)`
   font-family: Poppins-Regular;
   text-align: center;
 `
-export const ButtonAnimationWrapper = styled(Pressable)`
+export const ButtonAnimationWrapper = styled(TouchableOpacity)`
   border-radius: 60px;
 `
 

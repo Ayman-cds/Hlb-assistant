@@ -14,7 +14,7 @@ export const ChatHeader = styled(View)`
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-  height: 20%;
+  height: 16%;
   /* border: 1px solid black; */
   margin-right: 10px;
 `
@@ -27,7 +27,8 @@ export const RiveContainer = styled(View)`
 export const ChatSection = styled(View)`
   margin: 5px;
   display: flex;
-  height: 75%;
+  height: 82%;
+  margin-bottom: 30px;
 `
 export const ChatTitle = styled(Text)`
   font-family: Poppins-Light;
@@ -43,6 +44,8 @@ export const InputRowContainer = styled(View)`
   /* border: 1px solid black; */
   justify-content: space-around;
   align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `
 export const InputContainer = styled(View)`
   border: 1px solid #c3c3c3;
@@ -70,11 +73,10 @@ export const StyledTextInput = styled(TextInput)`
   width: 80%;
 `
 
-export const MicButton = styled(Pressable)`
+export const MicButton = styled(View)`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #d9d9d97e;
   border-radius: 60px;
   padding: 10px;
 `

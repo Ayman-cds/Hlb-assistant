@@ -39,6 +39,7 @@ import { useCollectionData } from 'react-firebase-hooks/firestore'
 import Rive, { Fit } from 'rive-react-native'
 import LottieView from 'lottie-react-native'
 import audioButton from '../../Assets/Home/audioButton.json'
+import AudioRecorder from '../AudioRecorder/AudioRecorder'
 
 const ChatInput = () => {
   const messageRef = collection(db, 'nlpReplies')
@@ -81,9 +82,7 @@ const ChatInput = () => {
 
   return (
     <InputRowContainer>
-      <MicButton>
-        <MicIcon />
-      </MicButton>
+      <AudioRecorder {...{ buttonSize: 50 }} />
       <InputContainer>
         <StyledTextInput
           {...{

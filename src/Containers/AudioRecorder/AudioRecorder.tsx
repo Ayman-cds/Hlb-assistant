@@ -1,128 +1,78 @@
-import { View, Text, Platform, PermissionsAndroid, Button } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import AudioRecorderPlayer, {
-  AudioEncoderAndroidType,
-  AudioSet,
-  AudioSourceAndroidType,
-  AVEncoderAudioQualityIOSType,
-  AVEncodingOption,
-  AVModeIOSOption,
-  RecordBackType,
-} from 'react-native-audio-recorder-player'
-import { ref, uploadBytes } from 'firebase/storage'
-import { storage } from '@/firebase.config'
+import React, { useEffect, useRef, useState } from 'react'
+import { Buffer } from 'buffer'
+import Permissions from 'react-native-permissions'
+import AudioRecord from 'react-native-audio-record'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import { db, storage } from '@/firebase.config'
+import { addDoc, collection } from 'firebase/firestore'
+import { View, Text } from 'react-native'
+import { ButtonAnimationWrapper } from '../Home/HomeElements'
+import audioButton from '../../Assets/Home/audioButton.json'
 
-const AudioRecorder = () => {
-  const audioRecorderPlayer = new AudioRecorderPlayer()
-  const [recording, setRecording] = useState()
-  const [started, setStarted] = useState(false)
-  const [currentRecordingUri, setCurrentRecordingUri] = useState<null | string>(
-    null,
-  )
-  const [recordingState, setRecordingState] = useState<RecordBackType>()
+import LottieView from 'lottie-react-native'
+import { useNavigation } from '@react-navigation/native'
+import { MicButton, MicIcon } from '../Chat/ChatElements'
+const AudioRecorder = ({
+  buttonSize,
+  home,
+}: {
+  buttonSize: number
+  home?: boolean
+}) => {
+  // VOICE CAPTURE ========================================================
+  const navigation = useNavigation()
+  const messageRef = collection(db, 'nlpReplies')
+  const animation = useRef(null)
+  const sound = null
+  const [audioState, setAudioState] = useState({
+    audioFile: '',
+    recording: false,
+    loaded: false,
+    paused: true,
+  })
+  const audioSetUp = async () => {
+    await checkPermission()
+    const audioOptions = {
+      sampleRate: 16000,
+      channels: 1,
+      bitsPerSample: 16,
+      wavFile: 'test.wav',
+    }
 
+    AudioRecord.init(audioOptions)
+
+    AudioRecord.on('data', data => {
+      const chunk = Buffer.from(data, 'base64')
+      console.log('chunk size', chunk.byteLength)
+      // do something with audio chunk
+    })
+  }
   useEffect(() => {
-    recordAudioRequest()
+    audioSetUp()
   }, [])
-  const recordAudioRequest = async () => {
-    if (Platform.OS === 'android') {
-      try {
-        const grants = await PermissionsAndroid.requestMultiple([
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-        ])
 
-        console.log('write external stroage', grants)
+  const startAudioCapture = () => {
+    console.log('start record')
+    setAudioState(state => ({
+      ...state,
+      audioFile: '',
+      recording: true,
+      loaded: false,
+    }))
+    AudioRecord.start()
+  }
 
-        if (
-          grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          grants['android.permission.READ_EXTERNAL_STORAGE'] ===
-            PermissionsAndroid.RESULTS.GRANTED &&
-          grants['android.permission.RECORD_AUDIO'] ===
-            PermissionsAndroid.RESULTS.GRANTED
-        ) {
-          console.log('Permissions granted')
-        } else {
-          console.log('All required permissions not granted')
-          return
-        }
-      } catch (err) {
-        console.warn(err)
-        return
-      }
+  const stopAudioCapture = async () => {
+    if (!audioState.recording) return
+    console.log('stop record')
+    let audioFile = await AudioRecord.stop()
+    uploadAudio(`file:///${audioFile}`)
+    console.log('audioFile', audioFile)
+    setAudioState(state => ({ ...state, audioFile, recording: false }))
+    if (home) {
+      navigation.navigate('Chat')
     }
   }
-  const startRecording = async () => {
-    const audioSet: AudioSet = {
-      AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
-      AudioSourceAndroid: AudioSourceAndroidType.MIC,
-      AVModeIOS: AVModeIOSOption.measurement,
-      AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
-      AVNumberOfChannelsKeyIOS: 2,
-      AVFormatIDKeyIOS: AVEncodingOption.aac,
-    }
-    const meteringEnabled = false
-
-    const path = 'hello.wav'
-    const uri = await audioRecorderPlayer.startRecorder(
-      undefined,
-      audioSet,
-      meteringEnabled,
-    )
-    console.log('START recording uri ======>>>', uri)
-    setStarted(true)
-    setCurrentRecordingUri(uri)
-    // uploadAudio(uri)
-
-    audioRecorderPlayer.addRecordBackListener(e => {
-      setRecordingState({
-        recordSecs: e.current_position,
-        recordTime: audioRecorderPlayer.mmssss(Math.floor(e.current_position)),
-      })
-    })
-  }
-
-  const stopRecording = async () => {
-    const result = await audioRecorderPlayer.stopPlayer()
-    setStarted(false)
-    if (currentRecordingUri) {
-      uploadAudio(currentRecordingUri)
-    }
-    audioRecorderPlayer.removeRecordBackListener()
-    setRecordingState({
-      recordSecs: 0,
-    })
-    console.log(result)
-  }
-
-  const onStartPlay = async e => {
-    console.log('onStartPlay')
-    // const path = 'hello.wav'
-    const msg = await audioRecorderPlayer.startPlayer()
-    audioRecorderPlayer.setVolume(1.0)
-    console.log(msg)
-    audioRecorderPlayer.addPlayBackListener(e => {
-      if (e.current_position === e.duration) {
-        console.log('finished')
-        audioRecorderPlayer.stopPlayer()
-      }
-      setRecordingState({
-        currentPositionSec: e.current_position,
-        currentDurationSec: e.duration,
-        playTime: audioRecorderPlayer.mmssss(Math.floor(e.current_position)),
-        duration: audioRecorderPlayer.mmssss(Math.floor(e.duration)),
-      })
-    })
-  }
-
-  const onStopPlay = async e => {
-    console.log('onStopPlay')
-    audioRecorderPlayer.stopPlayer()
-    audioRecorderPlayer.removePlayBackListener()
-  }
-
   const getAudioBlob = async (imageUrl: string) => {
     const response = await fetch(imageUrl)
     const blob = await response.blob()
@@ -132,25 +82,107 @@ const AudioRecorder = () => {
     let audioFileName = '4' + audioUri.substring(audioUri.lastIndexOf('/') + 1)
     console.log(audioFileName)
     const reference = ref(storage, audioFileName)
-    const imageBlob = await getAudioBlob(audioUri)
+    const audioBlob = await getAudioBlob(audioUri)
+
+    const data = new FormData()
+    data.append('file', audioBlob)
+
     try {
-      const response = await uploadBytes(reference, imageBlob)
-      console.log(response)
+      const response = await uploadBytes(reference, audioBlob)
+      const downloadURL = await getDownloadURL(ref(storage, audioFileName))
+      uploadUrlToFlask(downloadURL)
+      console.log('RESPONSE =====>>>', downloadURL)
     } catch (error) {
       console.error(error)
     }
   }
+  const uploadUrlToFlask = async (downloadURL: string) => {
+    const req = { downloadURL }
+    const response = await fetch('http://10.81.176.186:3000/response', {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(req),
+    })
+    const res = await response.json()
+    sendMessageToFb(1, res.translated)
+    sendMessageToFb(2, res.text)
+    console.log('RES ---->>>>>', res)
+  }
+
+  const sendMessageToFb = async (userNumber: 1 | 2, inputText: string) => {
+    const newMessageTest = {
+      text: inputText,
+      createdAt: new Date(),
+      userId: userNumber,
+    }
+    await addDoc(messageRef, newMessageTest)
+  }
+
+  // mic permission =============================================================
+  const checkPermission = async () => {
+    const p = await Permissions.check('microphone')
+    console.log('permission check', p)
+    if (p === 'authorized') return
+    return requestPermission()
+  }
+
+  const requestPermission = async () => {
+    const p = await Permissions.request('microphone')
+    console.log('permission request', p)
+  }
+
+  // HANDLERS ===================================================================
+  const [buttonState, setButtonState] = useState({
+    pressed: false,
+    size: buttonSize,
+    speed: 0.5,
+  })
+  const onPressInHandler = () => {
+    startAudioCapture()
+    setButtonState({ pressed: true, size: buttonSize * 1.6, speed: 3 })
+  }
+
+  const onPressOutHandler = () => {
+    stopAudioCapture()
+    setButtonState({ pressed: false, size: 70, speed: 0.5 })
+    sendMessageToFb(2, 'processing...')
+  }
   return (
-    <View>
-      {started ? (
-        <Button {...{ title: 'stop', onPress: stopRecording }} />
+    <ButtonAnimationWrapper
+      {...{
+        shadowColor: '#000',
+        onPressIn: onPressInHandler,
+        onPressOut: onPressOutHandler,
+      }}
+    >
+      {home ? (
+        <LottieView
+          {...{
+            ref: animation,
+            speed: buttonState.speed,
+            autoPlay: true,
+            style: {
+              width: buttonState.size,
+              height: buttonState.size,
+            },
+            source: audioButton,
+          }}
+        />
       ) : (
-        <Button {...{ title: 'start', onPress: startRecording }} />
+        <MicButton
+          {...{
+            style: {
+              backgroundColor: buttonState.pressed ? 'red' : '#d9d9d97e',
+            },
+          }}
+        >
+          <MicIcon />
+        </MicButton>
       )}
-      <Button {...{ title: 'start playing', onPress: onStartPlay }} />
-      <Button {...{ title: 'stop playing', onPress: onStopPlay }} />
-      <Text>AudioRecorder</Text>
-    </View>
+    </ButtonAnimationWrapper>
   )
 }
 
