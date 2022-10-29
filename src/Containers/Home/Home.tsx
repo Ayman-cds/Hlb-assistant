@@ -20,10 +20,29 @@ import MicSVG from '../../Assets/Home/microphone.svg'
 import { addDoc, collection } from 'firebase/firestore'
 import { db } from '@/firebase.config'
 import Rive, { RiveRef } from 'rive-react-native'
+import { Buffer } from 'buffer'
+import Permissions from 'react-native-permissions'
+import Sound from 'react-native-sound'
+import AudioRecord from 'react-native-audio-record'
+import { ref, uploadBytes } from 'firebase/storage'
+import { storage } from '@/firebase.config'
 
 const Home = () => {
   const animation = useRef(null)
   const riveRef = React.useRef<RiveRef>(null)
+
+  // mic permission =============================================================
+  const checkPermission = async () => {
+    const p = await Permissions.check('microphone')
+    console.log('permission check', p)
+    if (p === 'authorized') return
+    return this.requestPermission()
+  }
+
+  const requestPermission = async () => {
+    const p = await Permissions.request('microphone')
+    console.log('permission request', p)
+  }
   const uploadNewSosRequest = async () => {
     try {
       console.log('uploading request')
@@ -32,16 +51,14 @@ const Home = () => {
         something: 'else',
       })
       console.log('request uploaded, response ==>>', response.id)
-      // storeData(response.id);
     } catch (error) {
       console.error('Error while uploading Request', error)
     }
   }
 
   useEffect(() => {
-    // uploadNewSosRequest()
     riveRef.current?.setInputState('State Machine 1', 'isLimited', false)
-  }, [])
+  })
 
   return (
     <HomeContainer>

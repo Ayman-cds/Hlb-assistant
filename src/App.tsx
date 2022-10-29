@@ -9,24 +9,35 @@ import { PermissionsAndroid, Platform } from 'react-native'
 import 'react-native-gesture-handler'
 
 const App = () => {
+
   const recordAudioRequest = async () => {
-    if (Platform.OS == 'android') {
-      // Android requires an explicit call to ask for permission
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-        {
-          title: 'Microphone Permission',
-          message: '[Permission explanation]',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      )
-      console.log('permission =>>>>', granted)
-      return granted === PermissionsAndroid.RESULTS.GRANTED
-    } else {
-      // iOS will automatically ask for permission
-      return true
+    if (Platform.OS === 'android') {
+      try {
+        const grants = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        ])
+
+        console.log('write external stroage', grants)
+
+        if (
+          grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.READ_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.RECORD_AUDIO'] ===
+            PermissionsAndroid.RESULTS.GRANTED
+        ) {
+          console.log('Permissions granted')
+        } else {
+          console.log('All required permissions not granted')
+          return
+        }
+      } catch (err) {
+        console.warn(err)
+        return
+      }
     }
   }
   const checkPermission = async () => {

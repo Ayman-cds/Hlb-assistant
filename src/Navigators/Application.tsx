@@ -11,8 +11,8 @@ import { navigationRef } from './utils'
 import Home from '@/Containers/Home/Home'
 import Goals from '@/Containers/Goals/Goals'
 import VoiceTest2 from '@/Containers/VoiceTest2'
-import { ChatScreen } from '@/Containers/Chat/ChatSreen'
-import Chat from '@/Containers/Chat/Chat'
+import AudioRecorder from '@/Containers/AudioRecorder/AudioRecorder'
+import AudioTest from '@/Containers/AudioRecorder/AudioTest'
 
 export type RootStackParamList = {
   StartUp: undefined
@@ -35,7 +35,7 @@ const ApplicationNavigator = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="StartUp" component={StartupContainer} />
-          <Stack.Screen name="Test" component={Chat} />
+          <Stack.Screen name="Test" component={Home} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Goals" component={Goals} />
         </Stack.Navigator>

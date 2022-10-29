@@ -3,8 +3,11 @@
   package="com.bankingapp"
 >
     <uses-permission android:name="android.permission.INTERNET" />
-    <queries> <package android:name="com.google.android.googlequicksearchbox"/> </queries>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <queries> <package android:name="com.google.android.googlequicksearchbox"/> </queries>
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"

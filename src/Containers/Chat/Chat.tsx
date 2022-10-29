@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { GiftedChat } from 'react-native-gifted-chat'
+import { GiftedChat, IMessage } from 'react-native-gifted-chat'
 import {
   ChatContainer,
   ChatTitle,
@@ -35,17 +35,22 @@ const ChatInput = () => {
     </InputContainer>
   )
 }
-
 const Chat = () => {
   const messageRef = collection(db, 'nlpReplies')
   const q = query(messageRef, orderBy('createdAt', 'desc'), limit(20))
   const [fbMessages] = useCollectionData(q)
+  const [messages, setMessages] = useState<IMessage[]>([])
+
   useEffect(() => {
     if (fbMessages) {
-      const allMessages = fbMessages.map((message, index) => {
+      const allMessages: IMessage[] = fbMessages.map((message, index) => {
+        console.log(new Date(message.createdAt.seconds))
+        console.log(message.createdAt)
         return {
           _id: index,
           text: message.text,
+          // TODO: FIX DATE ===========================================
+          createdAt: new Date(message.createdAt.seconds),
           user: {
             _id: message.userId,
             name: 'react native',
@@ -57,15 +62,13 @@ const Chat = () => {
     }
   }, [fbMessages])
 
-  const [messages, setMessages] = useState([])
-  const onSend = async userMessage => {
+  const sendMessageToFb = async (userMessage: IMessage[]) => {
     console.log(userMessage)
     const newMessageTest = {
       text: userMessage[0].text,
       createdAt: new Date(),
       userId: 1,
     }
-
     await addDoc(messageRef, newMessageTest)
   }
 
@@ -78,7 +81,8 @@ const Chat = () => {
         <GiftedChat
           {...{
             messages,
-            onSend: messages => onSend(messages),
+            onSend: messages => sendMessageToFb(messages),
+
             // renderSend: SendButton,
             user: {
               _id: 1,

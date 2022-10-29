@@ -20,16 +20,19 @@ const VoiceTest2 = () => {
   }, [])
 
   const startSpeechToText = async () => {
-    await Voice.start('en-NZ')
+    const result = await Voice.start('en-NZ')
+    console.log(result)
     setStarted(true)
   }
 
   const stopSpeechToText = async () => {
-    await Voice.stop()
+    const result = await Voice.stop()
+    console.log(result)
     setStarted(false)
   }
 
   const onSpeechResults = result => {
+    console.log(result)
     setResults(result.value)
   }
 
