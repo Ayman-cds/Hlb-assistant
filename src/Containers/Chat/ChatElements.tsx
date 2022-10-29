@@ -11,17 +11,23 @@ export const ChatContainer = styled(View)`
 `
 export const ChatHeader = styled(View)`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: space-around;
   height: 20%;
-  border: 1px solid black;
+  /* border: 1px solid black; */
+  margin-right: 10px;
+`
+export const RiveContainer = styled(View)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50%;
 `
 export const ChatSection = styled(View)`
-  border: 1px solid green;
   margin: 5px;
   display: flex;
-  height: 70%;
+  height: 75%;
 `
 export const ChatTitle = styled(Text)`
   font-family: Poppins-Light;
@@ -34,7 +40,7 @@ export const InputRowContainer = styled(View)`
   width: 95%;
   flex-direction: row;
   align-items: space-around;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   justify-content: space-around;
   align-items: center;
 `
@@ -60,7 +66,7 @@ export const SendButton = styled(Image).attrs({
 export const StyledTextInput = styled(TextInput)`
   padding-left: 30px;
   color: black;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   width: 80%;
 `
 
@@ -78,3 +84,16 @@ export const MicIcon = styled(Image).attrs({
   width: 30px;
   height: 30px;
 `
+interface IsMe {
+  isMe: boolean
+}
+export const ChatBubbleContainer = styled(View)<IsMe>`
+  background-color: ${props => (props.isMe ? '#0077b6' : '#9e9e9e4f')};
+  padding: 10px;
+  max-width: 300px;
+  border-radius: 20px;
+`
+export const ChatText = styled(Text)<IsMe>`
+  font-family: Poppins-Light;
+  color: ${props => (props.isMe ? '#caf0f8;' : '#000')};
+` 

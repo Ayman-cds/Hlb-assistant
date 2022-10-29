@@ -1,6 +1,11 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { GiftedChat, IMessage } from 'react-native-gifted-chat'
+import {
+  Bubble,
+  GiftedChat,
+  IMessage,
+  TMessage,
+} from 'react-native-gifted-chat'
 import {
   ChatContainer,
   ChatHeader,
@@ -13,6 +18,9 @@ import {
   StyledTextInput,
   MicIcon,
   MicButton,
+  ChatBubbleContainer,
+  ChatText,
+  RiveContainer,
 } from './ChatElements'
 import { TextInput } from 'react-native-gesture-handler'
 import {
@@ -28,15 +36,9 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/firebase.config'
 import { useCollectionData } from 'react-firebase-hooks/firestore'
-import Rive from 'rive-react-native'
+import Rive, { Fit } from 'rive-react-native'
 import LottieView from 'lottie-react-native'
 import audioButton from '../../Assets/Home/audioButton.json'
-// const SendButton = () => (
-
-//   <TouchableOpacity {...{ style: { borderWidth: 1 } }}>
-//     <Text {...{ color: 'black' }}>Send</Text>
-//   </TouchableOpacity>
-// )
 
 const ChatInput = () => {
   const messageRef = collection(db, 'nlpReplies')
@@ -98,6 +100,19 @@ const ChatInput = () => {
     </InputRowContainer>
   )
 }
+
+const ChatBubble = (message: Bubble<TMessage>['props']) => {
+  useEffect(() => {
+    console.log('MESSAGE =======>>>>', message.message.currentMessage.user._id)
+  }, [])
+
+  const isMe = message.message.currentMessage.user._id === 1
+  return (
+    <ChatBubbleContainer {...{ isMe }}>
+      <ChatText {...{ isMe }}>{message.message.currentMessage.text}</ChatText>
+    </ChatBubbleContainer>
+  )
+}
 const Chat = () => {
   const messageRef = collection(db, 'nlpReplies')
   const q = query(messageRef, orderBy('createdAt', 'desc'), limit(20))
@@ -113,7 +128,7 @@ const Chat = () => {
           _id: index,
           text: message.text,
           // TODO: FIX DATE ===========================================
-          createdAt: new Date(message.createdAt.seconds),
+          // createdAt: new Date(message.createdAt.seconds),
           user: {
             _id: message.userId,
             name: 'react native',
@@ -128,11 +143,14 @@ const Chat = () => {
   return (
     <ChatContainer>
       <ChatHeader>
-        <Rive
-          autoplay
-          url="https://firebasestorage.googleapis.com/v0/b/nlpbanking.appspot.com/o/avatarWhiteBlue.riv?alt=media&token=684a95ae-879e-4c2c-a88a-fce1397f560b"
-          style={{ width: 800, height: 80, borderWidth: 1 }}
-        />
+        <RiveContainer>
+          <Rive
+            fit={Fit.Contain}
+            autoplay
+            url="https://firebasestorage.googleapis.com/v0/b/nlpbanking.appspot.com/o/avatarWhiteBlue.riv?alt=media&token=684a95ae-879e-4c2c-a88a-fce1397f560b"
+            style={{ width: 80, height: 80 }}
+          />
+        </RiveContainer>
         <ChatTitle>Tony - Personal Assistant</ChatTitle>
       </ChatHeader>
       <ChatSection>
@@ -140,7 +158,10 @@ const Chat = () => {
           {...{
             messages,
             // onSend: messages => sendMessageToFb(messages),
-
+            showAvatarForEveryMessage: false,
+            renderBubble: (message: Bubble<TMessage>['props']) => (
+              <ChatBubble {...{ message: message }} />
+            ),
             // renderSend: SendButton,
             user: {
               _id: 1,
