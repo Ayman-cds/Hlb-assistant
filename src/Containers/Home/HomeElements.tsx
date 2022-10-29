@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, Text, TouchableOpacity, View } from 'react-native'
 import styled from 'styled-components'
 
 export const HomeContainer = styled(View)`
@@ -49,11 +49,12 @@ export const WelcomeSubtext = styled(Text)`
   font-family: Poppins-Regular;
   text-align: center;
 `
-export const ButtonAnimationWrapper = styled(TouchableOpacity)`
+export const ButtonAnimationWrapper = styled(Pressable)`
   border-radius: 60px;
 `
 
 export const ButtonsWrapper = styled(View)`
+  transition: 0.5s all;
   display: flex;
   flex-direction: row;
   width: 100%;

@@ -13,6 +13,7 @@ import Goals from '@/Containers/Goals/Goals'
 import VoiceTest2 from '@/Containers/VoiceTest2'
 import AudioRecorder from '@/Containers/AudioRecorder/AudioRecorder'
 import AudioTest from '@/Containers/AudioRecorder/AudioTest'
+import Chat from '@/Containers/Chat/Chat'
 
 export type RootStackParamList = {
   StartUp: undefined
@@ -35,9 +36,10 @@ const ApplicationNavigator = () => {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="StartUp" component={StartupContainer} />
-          <Stack.Screen name="Test" component={Home} />
+          <Stack.Screen name="Test" component={Chat} />
           <Stack.Screen name="Home" component={Home} />
           <Stack.Screen name="Goals" component={Goals} />
+          <Stack.Screen name="Chat" component={Chat} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
