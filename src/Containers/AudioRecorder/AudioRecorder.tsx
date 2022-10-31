@@ -108,15 +108,20 @@ const AudioRecorder = ({
     })
     const res = await response.json()
     sendMessageToFb(1, res.translation)
-    sendMessageToFb(2, res.text)
+    sendMessageToFb(2, res.text, res.amount)
     console.log('RES ---->>>>>', res)
   }
 
-  const sendMessageToFb = async (userNumber: 1 | 2, inputText: string) => {
+  const sendMessageToFb = async (
+    userNumber: 1 | 2,
+    inputText: string,
+    amount?: number,
+  ) => {
     const newMessageTest = {
       text: inputText,
       createdAt: new Date(),
       userId: userNumber,
+      amount: amount ? amount : 0,
     }
     await addDoc(messageRef, newMessageTest)
   }

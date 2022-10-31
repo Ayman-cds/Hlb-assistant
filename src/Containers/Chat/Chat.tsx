@@ -49,11 +49,16 @@ const ChatInput = () => {
     sendToFlask()
   }
 
-  const sendMessageToFb = async (userNumber: 1 | 2, inputText?: string) => {
+  const sendMessageToFb = async (
+    userNumber: 1 | 2,
+    inputText?: string,
+    amount?: number,
+  ) => {
     const newMessageTest = {
       text: inputText ? inputText : userInput,
       createdAt: new Date(),
       userId: userNumber,
+      amount: amount ? amount : 0,
     }
     await addDoc(messageRef, newMessageTest)
     setTextInput('')
@@ -71,7 +76,7 @@ const ChatInput = () => {
     const res = await response.json()
 
     console.log(res)
-    sendMessageToFb(2, res.text)
+    sendMessageToFb(2, res.text, res.amount)
   }
 
   useEffect(() => {
@@ -100,22 +105,27 @@ const ChatInput = () => {
 
 const ChatBubble = (message: Bubble<TMessage>['props']) => {
   useEffect(() => {
-    console.log('MESSAGE =======>>>>', message.message.currentMessage.user._id)
+    console.log('MESSAGE =======>>>>', message)
   }, [])
 
-  const sendMessageToFb = async (userNumber: 1 | 2, inputText?: string) => {
-    const newMessageTest = {
-      text: inputText ? inputText : userInput,
-      createdAt: new Date(),
-      userId: userNumber,
-    }
-    await addDoc(messageRef, newMessageTest)
-    setTextInput('')
-  }
   const isMe = message.message.currentMessage.user._id === 1
   return (
     <ChatBubbleContainer {...{ isMe }}>
-      <ChatText {...{ isMe }}>{message.message.currentMessage.text}</ChatText>
+      {message.message.currentMessage.amount ? (
+        <>
+          <ChatText {...{ style: { fontFamily: 'Poppins-Bold' } }}>
+            Transaction details:
+          </ChatText>
+          <ChatText {...{ isMe }}>
+            Transfer amount: RM {message.message.currentMessage.amount}
+          </ChatText>
+          <ChatText {...{ isMe }}>Recipient name: Kenneth Lim</ChatText>
+          <ChatText {...{ isMe }}>Transfer Date: 30/10/2022</ChatText>
+          <ChatText {...{ isMe }}>AccountNumber: 3210058285</ChatText>
+        </>
+      ) : (
+        <ChatText {...{ isMe }}>{message.message.currentMessage.text}</ChatText>
+      )}
     </ChatBubbleContainer>
   )
 }
@@ -125,11 +135,16 @@ const Chat = () => {
   const [fbMessages] = useCollectionData(q)
   const [messages, setMessages] = useState<IMessage[]>([])
 
-  const sendMessageToFb = async (userNumber: 1 | 2, inputText?: string) => {
+  const sendMessageToFb = async (
+    userNumber: 1 | 2,
+    inputText?: string,
+    amount?: number,
+  ) => {
     const newMessageTest = {
       text: inputText ? inputText : userInput,
       createdAt: new Date(),
       userId: userNumber,
+      amount: amount ? amount : 0,
     }
     await addDoc(messageRef, newMessageTest)
   }
@@ -151,10 +166,12 @@ const Chat = () => {
           text: message.text,
           // TODO: FIX DATE ===========================================
           // createdAt: new Date(message.createdAt.seconds),
+          transfer: message.amount !== 0,
+          amount: message.amount,
           user: {
             _id: message.userId,
             name: 'react native',
-            avatar: 'https://placeimg.com/140/140/any',
+            // avatar: 'https://placeimg.com/140/140/any',
           },
         }
       })
