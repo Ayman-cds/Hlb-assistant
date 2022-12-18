@@ -1,6 +1,6 @@
 
 # HLB Personal Assistant
-Welcome to HLB Personal Assistant, the chat-based banking app that helps you manage your finances on the go. This app was built in 24 hours during a hackathon using React Native and TypeScript.
+Welcome to HLB Personal Assistant, the chat-based banking app that helps you manage your finances on the go. This app was built during a 24 hour hackathon using React Native and TypeScript.
 
 ## Features
 * Chat with a personal assistant to check your account balances, transfer funds, and more
